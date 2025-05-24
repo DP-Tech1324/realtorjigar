@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -18,7 +17,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   
   // Handle scroll effect
   useEffect(() => {
@@ -206,6 +205,22 @@ const Navbar = () => {
                 Contact
               </Link>
             </li>
+
+            {/* Admin Panel Link - Only show if user is admin */}
+            {isAdmin && (
+              <li>
+                <Link 
+                  to="/admin" 
+                  className={cn(
+                    "hover:text-realtor-gold transition-colors flex items-center gap-2",
+                    location.pathname.startsWith('/admin') ? "text-realtor-gold font-semibold" : ""
+                  )}
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  Admin Panel
+                </Link>
+              </li>
+            )}
           </ul>
 
           {/* Mobile view: CTA button inside menu */}
@@ -213,14 +228,32 @@ const Navbar = () => {
             <Button className="bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy w-full">
               <Link to="/contact">Contact Agent</Link>
             </Button>
+            {/* Mobile Admin Panel Button */}
+            {isAdmin && (
+              <Button className="bg-realtor-navy hover:bg-realtor-navy/90 text-white w-full mt-2">
+                <Link to="/admin" className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4" />
+                  Admin Panel
+                </Link>
+              </Button>
+            )}
           </div>
         </nav>
 
-        {/* Desktop view: CTA button */}
+        {/* Desktop view: CTA buttons */}
         <div className="hidden md:flex items-center space-x-4">
           <Button className="bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy">
             <Link to="/contact">Contact Agent</Link>
           </Button>
+          {/* Desktop Admin Panel Button */}
+          {isAdmin && (
+            <Button className="bg-realtor-navy hover:bg-realtor-navy/90 text-white">
+              <Link to="/admin" className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" />
+                Admin Panel
+              </Link>
+            </Button>
+          )}
         </div>
 
         {/* Mobile menu toggle */}

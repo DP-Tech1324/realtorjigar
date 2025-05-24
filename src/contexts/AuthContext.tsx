@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,6 +36,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      console.log('Checking admin status for user:', user.id);
+      
       // Check if the user is an admin
       const { data: adminData, error: adminError } = await supabase
         .from('admin_users')
@@ -45,9 +46,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('is_active', true)
         .maybeSingle();
 
+      console.log('Admin data:', adminData, 'Error:', adminError);
+
       const adminStatus = !!adminData && !adminError;
       setIsAdmin(adminStatus);
       localStorage.setItem('isAdmin', adminStatus.toString());
+
+      console.log('Admin status set to:', adminStatus);
 
       // Check if the user is an agent (you can implement this logic based on your needs)
       // For now, setting it to false, but you can add agent table checks here
@@ -72,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, currentSession) => {
+        console.log('Auth state changed:', _event, currentSession?.user?.id);
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
 
@@ -90,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      console.log('Initial session:', currentSession?.user?.id);
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
 
