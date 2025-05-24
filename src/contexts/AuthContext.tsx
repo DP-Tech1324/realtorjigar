@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,29 +29,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { toast } = useToast();
 
   const refreshProfile = async () => {
-    if (!user) return;
+    if (!user) {
+      setProfile(null);
+      setIsAdmin(false);
+      setIsAgent(false);
+      return;
+    }
 
     try {
-    // Check if the user is an admin
-    const { data: adminData, error: adminError } = await supabase
-      .from('admin_users')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('is_active', true)
-      .single();
+      // Check if the user is an admin
+      const { data: adminData, error: adminError } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .maybeSingle();
 
-    const isAdmin = !!adminData;
+      const adminStatus = !!adminData && !adminError;
+      setIsAdmin(adminStatus);
+      localStorage.setItem('isAdmin', adminStatus.toString());
 
-    const newProfile = {
-      ...adminData,
-      role: isAdmin ? 'admin' : 'user', // you can adjust as needed
-    };
+      // Check if the user is an agent (you can implement this logic based on your needs)
+      // For now, setting it to false, but you can add agent table checks here
+      setIsAgent(false);
+      localStorage.setItem('isAgent', 'false');
 
-    setProfile(newProfile);
-  } catch (error) {
-    console.error('Error in refreshProfile:', error);
-  }
-};
+      const newProfile = {
+        ...adminData,
+        role: adminStatus ? 'admin' : 'user',
+      };
+
+      setProfile(newProfile);
+    } catch (error) {
+      console.error('Error in refreshProfile:', error);
+      setIsAdmin(false);
+      setIsAgent(false);
+      localStorage.setItem('isAdmin', 'false');
+      localStorage.setItem('isAgent', 'false');
+    }
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -162,4 +179,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

@@ -179,6 +179,7 @@ export type Database = {
           bedrooms: number | null
           brochure_url: string | null
           city: string
+          cover_image: string | null
           created_at: string
           description: string | null
           featured: boolean | null
@@ -190,6 +191,7 @@ export type Database = {
           property_type: string
           province: string
           square_feet: number | null
+          squarefeet: number | null
           status: string | null
           title: string
           updated_at: string
@@ -202,6 +204,7 @@ export type Database = {
           bedrooms?: number | null
           brochure_url?: string | null
           city: string
+          cover_image?: string | null
           created_at?: string
           description?: string | null
           featured?: boolean | null
@@ -213,6 +216,7 @@ export type Database = {
           property_type: string
           province: string
           square_feet?: number | null
+          squarefeet?: number | null
           status?: string | null
           title: string
           updated_at?: string
@@ -225,6 +229,7 @@ export type Database = {
           bedrooms?: number | null
           brochure_url?: string | null
           city?: string
+          cover_image?: string | null
           created_at?: string
           description?: string | null
           featured?: boolean | null
@@ -236,6 +241,7 @@ export type Database = {
           property_type?: string
           province?: string
           square_feet?: number | null
+          squarefeet?: number | null
           status?: string | null
           title?: string
           updated_at?: string

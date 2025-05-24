@@ -1,3 +1,4 @@
+
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -78,12 +79,12 @@ function App() {
           <Route path="/favorites" element={<Favorites />} />
 
           {/* Services Subpages */}
-          <Route path="/PropertySales" element={<PropertySales />} />
-          <Route path="/PropertyAcquisition" element={<PropertyAcquisition />} />
-          <Route path="/Relocation" element={<Relocation />} />
-          <Route path="/Investment" element={<Investment />} />
-          <Route path="/Luxury" element={<Luxury />} />
-          <Route path="/Commercial" element={<Commercial />} />
+          <Route path="/property-sales" element={<PropertySales />} />
+          <Route path="/property-acquisition" element={<PropertyAcquisition />} />
+          <Route path="/relocation" element={<Relocation />} />
+          <Route path="/investment" element={<Investment />} />
+          <Route path="/luxury" element={<Luxury />} />
+          <Route path="/commercial" element={<Commercial />} />
 
           {/* Protected Agent Route */}
           <Route path="/manage-properties" element={

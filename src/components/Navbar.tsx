@@ -99,12 +99,12 @@ const Navbar = () => {
                 <DropdownMenuTrigger className={cn(
                   "flex items-center hover:text-realtor-gold transition-colors",
                   location.pathname === '/services' ||
-                  location.pathname === '/PropertySales' ||
-                  location.pathname === '/PropertyAcquisition' ||
-                  location.pathname === '/Relocation' ||
-                  location.pathname === '/Investment' ||
-                  location.pathname === '/Luxury' ||
-                  location.pathname === '/Commercial'
+                  location.pathname === '/property-sales' ||
+                  location.pathname === '/property-acquisition' ||
+                  location.pathname === '/relocation' ||
+                  location.pathname === '/investment' ||
+                  location.pathname === '/luxury' ||
+                  location.pathname === '/commercial'
                     ? "text-realtor-gold font-semibold"
                     : ""
                 )}>
@@ -115,22 +115,22 @@ const Navbar = () => {
                     <Link to="/services">Overview</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/PropertySales">Property Sales</Link>
+                    <Link to="/property-sales">Property Sales</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/PropertyAcquisition">Property Acquisition</Link>
+                    <Link to="/property-acquisition">Property Acquisition</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/Relocation">Relocation Services</Link>
+                    <Link to="/relocation">Relocation Services</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/Investment">Investment Properties</Link>
+                    <Link to="/investment">Investment Properties</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/Luxury">Luxury Properties</Link>
+                    <Link to="/luxury">Luxury Properties</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/Commercial">Commercial Real Estate</Link>
+                    <Link to="/commercial">Commercial Real Estate</Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
