@@ -31,9 +31,9 @@ const AuthPage: React.FC = () => {
   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
 
   // If already logged in, redirect to home
-  if (!isLoading && user) {
-    return <Navigate to="/" />;
-  }
+ // if (!isLoading && user) {
+   // return <Navigate to="/admin" />;
+  // }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,8 +52,15 @@ const AuthPage: React.FC = () => {
     try {
       const { success } = await signIn(loginEmail, loginPassword);
       if (success) {
-        navigate('/');
-      }
+      // Wait a short moment to let profile load
+        setTimeout(() => {
+                if (localStorage.getItem('isAdmin') === 'true') {
+                  navigate('/admin');
+                } else {
+              navigate('/');
+                  }
+          }, 300);
+        }
     } finally {
       setIsLoginLoading(false);
     }

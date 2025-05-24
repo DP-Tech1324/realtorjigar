@@ -8,14 +8,8 @@ interface AuthContextProps {
   user: User | null;
   profile: any | null;
   isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<{
-    success: boolean;
-    error?: string;
-  }>;
-  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{
-    success: boolean;
-    error?: string;
-  }>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
   isAgent: boolean;
@@ -29,32 +23,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAgent, setIsAgent] = useState(false);
   const { toast } = useToast();
 
   const refreshProfile = async () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+    // Check if the user is an admin
+    const { data: adminData, error: adminError } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .single();
 
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return;
-      }
+    const isAdmin = !!adminData;
 
-      setProfile(data);
-    } catch (error) {
-      console.error('Error in refreshProfile:', error);
-    }
-  };
+    const newProfile = {
+      ...adminData,
+      role: isAdmin ? 'admin' : 'user', // you can adjust as needed
+    };
+
+    setProfile(newProfile);
+  } catch (error) {
+    console.error('Error in refreshProfile:', error);
+  }
+};
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
+      (_event, currentSession) => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
 
@@ -64,6 +64,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }, 0);
         } else {
           setProfile(null);
+          setIsAdmin(false);
+          setIsAgent(false);
           localStorage.removeItem('isAdmin');
           localStorage.removeItem('isAgent');
         }
@@ -85,79 +87,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  useEffect(() => {
-    if (profile) {
-      const isAdmin = profile.role === 'admin';
-      const isAgent = profile.role === 'admin' || profile.role === 'agent';
-
-      localStorage.setItem('isAdmin', isAdmin.toString());
-      localStorage.setItem('isAgent', isAgent.toString());
-    }
-  }, [profile]);
-
   const signIn = async (email: string, password: string) => {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
-        toast({
-          title: "Sign in failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
         return { success: false, error: error.message };
       }
 
-      toast({
-        title: "Signed in successfully",
-        description: "Welcome back!",
-      });
-
+      toast({ title: "Signed in successfully", description: "Welcome back!" });
       return { success: true };
     } catch (error: any) {
-      toast({
-        title: "Sign in failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
       return { success: false, error: error.message };
     }
   };
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
-      const { error } = await supabase.auth.signUp({ 
-        email, 
+      const { error } = await supabase.auth.signUp({
+        email,
         password,
         options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName
-          }
+          data: { first_name: firstName, last_name: lastName }
         }
       });
 
       if (error) {
-        toast({
-          title: "Sign up failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
         return { success: false, error: error.message };
       }
 
-      toast({
-        title: "Sign up successful",
-        description: "Please check your email to verify your account.",
-      });
-
+      toast({ title: "Sign up successful", description: "Please check your email to verify your account." });
       return { success: true };
     } catch (error: any) {
-      toast({
-        title: "Sign up failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
       return { success: false, error: error.message };
     }
   };
@@ -166,14 +131,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await supabase.auth.signOut();
     localStorage.removeItem('isAdmin');
     localStorage.removeItem('isAgent');
-    toast({
-      title: "Signed out",
-      description: "You have been signed out successfully.",
-    });
+    setIsAdmin(false);
+    setIsAgent(false);
+    setProfile(null);
+    toast({ title: "Signed out", description: "You have been signed out successfully." });
   };
-
-  const isAdmin = profile?.role === 'admin';
-  const isAgent = profile?.role === 'admin' || profile?.role === 'agent';
 
   return (
     <AuthContext.Provider value={{
@@ -200,3 +162,4 @@ export const useAuth = () => {
   }
   return context;
 };
+

@@ -3,12 +3,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/contexts/AuthContext';
 
+import ScrollToTop from '@/components/ScrollToTop';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import AdminLayout from '@/layouts/AdminLayout';
+
+// Public Pages
 import Home from '@/pages/Home';
 import About from '@/pages/About';
 import Listings from '@/pages/Listings';
 import Properties from '@/pages/Properties';
 import PropertyDetails from '@/pages/PropertyDetails';
-import PropertyManagement from '@/pages/PropertyManagement';
 import Contact from '@/pages/Contact';
 import Blog from '@/pages/Blog';
 import BlogPostPage from '@/pages/BlogPostPage';
@@ -20,27 +24,29 @@ import ServiceDetail from '@/pages/ServiceDetail';
 import Calculators from '@/pages/Calculators';
 import HomeValuation from '@/pages/HomeValuation';
 import ContactPage from '@/pages/ContactPage';
-import NotFound from '@/pages/NotFound';
-import ScrollToTop from '@/components/ScrollToTop';
-import AdminPanel from '@/pages/AdminPanel';
-import ImageManagement from '@/pages/ImageManagement';
-import UserManagement from '@/pages/UserManagement';
-import InquiriesManagement from '@/pages/InquiriesManagement';
-import AnalyticsPage from '@/pages/AnalyticsPage';
 import AuthPage from '@/pages/auth/AuthPage';
-import ProtectedRoute from '@/components/ProtectedRoute';
 import RlpSearch from '@/pages/RlpSearch';
 import Resources from '@/pages/Resources';
 import Favorites from '@/pages/Favorites';
+import NotFound from '@/pages/NotFound';
+
+// Admin Pages
+import AdminPanel from '@/pages/AdminPanel';
+import InquiriesManagement from '@/pages/InquiriesManagement';
+import UserManagement from '@/pages/UserManagement';
+import AnalyticsPage from '@/pages/AnalyticsPage';
+import ImageManagement from '@/pages/ImageManagement';
+import PropertyManagement from '@/pages/PropertyManagement';
+
+// Services Subpages
 import PropertySales from './pages/PropertySales';
 import PropertyAcquisition from './pages/PropertyAcquisition';
 import Relocation from './pages/Relocation';
 import Investment from './pages/Investment';
 import Luxury from './pages/Luxury';
 import Commercial from './pages/Commercial';
-import AdminLayout from '@/layouts/AdminLayout';
 
-// Create a client
+// Query Client
 const queryClient = new QueryClient();
 
 function App() {
@@ -49,31 +55,12 @@ function App() {
       <AuthProvider>
         <ScrollToTop />
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/listings" element={<Listings />} />
           <Route path="/properties/:id" element={<PropertyDetails />} />
-          
-          <Route path="/manage-properties" element={
-            <ProtectedRoute requireAgent={true}>
-              <PropertyManagement />
-            </ProtectedRoute>
-          } />
-
-          {/* Admin Panel and Nested Routes */}
-          <Route path="/admin" element={
-            <ProtectedRoute requireAdmin={true}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<AdminPanel />} />
-            <Route path="inquiries" element={<InquiriesManagement />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
-            <Route path="images" element={<ImageManagement />} />
-          </Route>
-
           <Route path="/contact" element={<Contact />} />
           <Route path="/contact-us" element={<ContactPage />} />
           <Route path="/blog" element={<Blog />} />
@@ -90,7 +77,7 @@ function App() {
           <Route path="/resources" element={<Resources />} />
           <Route path="/favorites" element={<Favorites />} />
 
-          {/* Services subpages */}
+          {/* Services Subpages */}
           <Route path="/PropertySales" element={<PropertySales />} />
           <Route path="/PropertyAcquisition" element={<PropertyAcquisition />} />
           <Route path="/Relocation" element={<Relocation />} />
@@ -98,6 +85,27 @@ function App() {
           <Route path="/Luxury" element={<Luxury />} />
           <Route path="/Commercial" element={<Commercial />} />
 
+          {/* Protected Agent Route */}
+          <Route path="/manage-properties" element={
+            <ProtectedRoute requireAgent={true}>
+              <PropertyManagement />
+            </ProtectedRoute>
+          } />
+
+          {/* Protected Admin Routes */}
+          <Route path="/admin" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<AdminPanel />} />
+            <Route path="inquiries" element={<InquiriesManagement />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="images" element={<ImageManagement />} />
+          </Route>
+
+          {/* Catch All */}
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
