@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -54,30 +53,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
-        
-        // When auth state changes, update localStorage for AdminNav
+
         if (currentSession?.user) {
-          // Don't call Supabase inside the callback - defer with setTimeout
           setTimeout(() => {
             refreshProfile();
           }, 0);
         } else {
           setProfile(null);
           localStorage.removeItem('isAdmin');
+          localStorage.removeItem('isAgent');
         }
       }
     );
 
-    // Then check for existing session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
-      
+
       if (currentSession?.user) {
         refreshProfile();
       }
@@ -89,18 +85,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  // Update localStorage when profile changes
   useEffect(() => {
     if (profile) {
       const isAdmin = profile.role === 'admin';
+      const isAgent = profile.role === 'admin' || profile.role === 'agent';
+
       localStorage.setItem('isAdmin', isAdmin.toString());
+      localStorage.setItem('isAgent', isAgent.toString());
     }
   }, [profile]);
 
   const signIn = async (email: string, password: string) => {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      
+
       if (error) {
         toast({
           title: "Sign in failed",
@@ -109,12 +107,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         return { success: false, error: error.message };
       }
-      
+
       toast({
         title: "Signed in successfully",
         description: "Welcome back!",
       });
-      
+
       return { success: true };
     } catch (error: any) {
       toast({
@@ -138,7 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
       });
-      
+
       if (error) {
         toast({
           title: "Sign up failed",
@@ -147,12 +145,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         return { success: false, error: error.message };
       }
-      
+
       toast({
         title: "Sign up successful",
         description: "Please check your email to verify your account.",
       });
-      
+
       return { success: true };
     } catch (error: any) {
       toast({
@@ -167,6 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     await supabase.auth.signOut();
     localStorage.removeItem('isAdmin');
+    localStorage.removeItem('isAgent');
     toast({
       title: "Signed out",
       description: "You have been signed out successfully.",

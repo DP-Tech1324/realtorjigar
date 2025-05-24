@@ -1,4 +1,3 @@
-
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -39,6 +38,7 @@ import Relocation from './pages/Relocation';
 import Investment from './pages/Investment';
 import Luxury from './pages/Luxury';
 import Commercial from './pages/Commercial';
+import AdminLayout from '@/layouts/AdminLayout';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -54,36 +54,26 @@ function App() {
           <Route path="/properties" element={<Properties />} />
           <Route path="/listings" element={<Listings />} />
           <Route path="/properties/:id" element={<PropertyDetails />} />
+          
           <Route path="/manage-properties" element={
             <ProtectedRoute requireAgent={true}>
               <PropertyManagement />
             </ProtectedRoute>
           } />
+
+          {/* Admin Panel and Nested Routes */}
           <Route path="/admin" element={
             <ProtectedRoute requireAdmin={true}>
-              <AdminPanel />
+              <AdminLayout />
             </ProtectedRoute>
-          } />
-          <Route path="/admin/images" element={
-            <ProtectedRoute requireAdmin={true}>
-              <ImageManagement />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin/users" element={
-            <ProtectedRoute requireAdmin={true}>
-              <UserManagement />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin/inquiries" element={
-            <ProtectedRoute requireAdmin={true}>
-              <InquiriesManagement />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin/analytics" element={
-            <ProtectedRoute requireAdmin={true}>
-              <AnalyticsPage />
-            </ProtectedRoute>
-          } />
+          }>
+            <Route index element={<AdminPanel />} />
+            <Route path="inquiries" element={<InquiriesManagement />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="images" element={<ImageManagement />} />
+          </Route>
+
           <Route path="/contact" element={<Contact />} />
           <Route path="/contact-us" element={<ContactPage />} />
           <Route path="/blog" element={<Blog />} />
@@ -99,12 +89,15 @@ function App() {
           <Route path="/rlp-search" element={<RlpSearch />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/favorites" element={<Favorites />} />
+
+          {/* Services subpages */}
           <Route path="/PropertySales" element={<PropertySales />} />
           <Route path="/PropertyAcquisition" element={<PropertyAcquisition />} />
           <Route path="/Relocation" element={<Relocation />} />
           <Route path="/Investment" element={<Investment />} />
           <Route path="/Luxury" element={<Luxury />} />
           <Route path="/Commercial" element={<Commercial />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />

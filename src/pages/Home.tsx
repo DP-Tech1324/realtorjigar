@@ -10,6 +10,8 @@ import TestimonialCard from '@/components/TestimonialCard';
 import { properties } from '@/data/properties';
 import { testimonials } from '@/data/testimonials';
 
+
+
 const Home = () => {
   // Only get featured properties
   const featuredProperties = properties.filter(property => property.featured);
